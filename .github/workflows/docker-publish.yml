@@ -16,7 +16,7 @@ jobs:
 
       # Print the 'test' environment variable
       - name: Print test variable
-        run: ${{ vars.TEST }}
+        run: echo "test: ${{ env.TEST }}"
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
