@@ -1,6 +1,8 @@
 # Stage 1: Build Asterisk
 FROM rockylinux:9-minimal AS build
 
+ARG ASTERISK_VERSION=22
+
 # Install build dependencies
 RUN microdnf install -y dnf && microdnf clean all && \
     ln -s /usr/bin/dnf /usr/bin/yum && \
@@ -17,10 +19,10 @@ RUN if [ -f /etc/selinux/config ]; then \
 
 # Download and compile Asterisk
 WORKDIR /usr/src
-RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-22-current.tar.gz && \
-    tar zxvf asterisk-22-current.tar.gz && \
-    rm -rf asterisk-22-current.tar.gz && \
-    cd asterisk-22* && \
+RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}-current.tar.gz && \
+    tar zxvf asterisk-${ASTERISK_VERSION}-current.tar.gz && \
+    rm -rf asterisk-${ASTERISK_VERSION}-current.tar.gz && \
+    cd asterisk-${ASTERISK_VERSION}* && \
     contrib/scripts/install_prereq install && \
     ./configure --libdir=/usr/lib64 --with-pjproject-bundled --with-jansson-bundled && \
     make menuselect.makeopts && \

@@ -25,8 +25,19 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and push
+      - name: Build and push Asterisk images
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: user/asterisk-rockylinux:latest
+          cache-from: type=registry,ref=user/asterisk-rockylinux:cache
+          cache-to: type=registry,ref=user/asterisk-rockylinux:cache,mode=max
+          tags: |
+            user/asterisk-rockylinux:20
+            user/asterisk-rockylinux:21
+            user/asterisk-rockylinux:22
+            user/asterisk-rockylinux:latest
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            ASTERISK_VERSION=20
+            ASTERISK_VERSION=21
+            ASTERISK_VERSION=22
