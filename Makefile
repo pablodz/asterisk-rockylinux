@@ -1,13 +1,13 @@
-MICROSERVICE_NAME=asteriskdocker
+MICROSERVICE_NAME=pablogod/asterisk-rockylinux:22
 
 build:
-	docker build -t $(MICROSERVICE_NAME)-$(tag) .
+	docker build -t $(MICROSERVICE_NAME) .
 release:
-	docker --config ~/.docker/vozy push $(MICROSERVICE_NAME)-$(tag)
+	docker --config ~/.docker/personal push $(MICROSERVICE_NAME)
 run: build
 	docker run -it  \
 		--network host \
 		--restart always \
-		$(MICROSERVICE_NAME)-$(tag)
+		$(MICROSERVICE_NAME)
 
 build-and-release: build release 

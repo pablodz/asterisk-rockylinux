@@ -28,7 +28,7 @@ jobs:
         with:
           push: true
           tags: |
-            user/asterisk-rockylinux:${{ matrix.version }}
+            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.version }}
           build-args: |
             ASTERISK_VERSION=${{ matrix.version }}
           platforms: linux/amd64,linux/arm64
