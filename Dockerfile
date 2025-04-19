@@ -4,17 +4,19 @@ FROM rockylinux:${BASE_VERSION} AS build
 
 ARG ASTERISK_VERSION=22
 
-# Install build dependencies and disable SELinux in a single step
+# Install build dependencies
 RUN microdnf install -y dnf && microdnf clean all && \
     ln -s /usr/bin/dnf /usr/bin/yum && \
     dnf -y update && \
     dnf -y install wget tar epel-release chkconfig libedit-devel gcc gcc-c++ make ncurses-devel \
     libxml2-devel sqlite-devel git diffutils && \
-    if [ -f /etc/selinux/config ]; then \
+    dnf clean all
+
+# Disable SELinux (only if the config file exists)
+RUN if [ -f /etc/selinux/config ]; then \
         sed -i s/SELINUX=enforcing/SELINUX=disabled/g /etc/selinux/config && \
         setenforce 0; \
-    fi && \
-    dnf clean all
+    fi
 
 # Download, compile, and install Asterisk in a single step
 WORKDIR /usr/src
