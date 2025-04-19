@@ -1,10 +1,10 @@
+ARG ASTERISK_VERSION=latest
 ARG BASE_VERSION=9-minimal
-ARG ASTERISK_VERSION=22
 
 FROM rockylinux:${BASE_VERSION} AS build
 
-ARG BASE_VERSION
 ARG ASTERISK_VERSION
+ARG BASE_VERSION
 
 RUN if [[ "${BASE_VERSION}" == *minimal ]]; then \
         echo "Minimal version detected, installing dnf..." && \
@@ -30,7 +30,7 @@ RUN if [ -f /etc/selinux/config ]; then \
 WORKDIR /usr/src
 RUN if [ "${ASTERISK_VERSION}" = "latest" ]; then \
         git clone --depth 1 https://github.com/asterisk/asterisk.git && \
-        cd asterisk && \
+        cd asterisk; \
     else \
         wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}-current.tar.gz && \
         tar zxvf asterisk-${ASTERISK_VERSION}-current.tar.gz && \

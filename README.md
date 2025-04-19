@@ -1,5 +1,7 @@
 # Asterisk on Rocky Linux
 
+![Build and Publish](https://github.com/pablogod/asterisk-rockylinux/actions/workflows/build-and-publish.yml/badge.svg)
+
 This repository provides Docker images for running Asterisk on Rocky Linux. The images are available on Docker Hub under the repository `pablogod/asterisk-rockylinux` with tags corresponding to the Asterisk version and base version.
 
 ## Available Tags
@@ -47,8 +49,13 @@ To run the container, use:
 docker run -it \
   --network host \
   --restart always \
+  -v /path/to/your/config:/etc/asterisk \
   pablogod/asterisk-rockylinux:<version>-<base_version>
 ```
+
+Replace `/path/to/your/config` with the directory containing your Asterisk configuration files (`*.conf`).
+
+**Note:** The `--network host` mode is required to run Asterisk as a node because NAT (Network Address Translation) can cause issues with SIP and RTP protocols. Due to this limitation, it is not possible to run more than one replica of the container in a Kubernetes pod.
 
 ### Automated Builds with GitHub Actions
 
