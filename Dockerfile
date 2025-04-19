@@ -1,14 +1,26 @@
 ARG BASE_VERSION=9-minimal
-FROM rockylinux:${BASE_VERSION} AS build
-
 ARG ASTERISK_VERSION=22
 
-RUN microdnf install -y dnf && microdnf clean all && \
-    ln -s /usr/bin/dnf /usr/bin/yum && \
-    dnf -y update && \
-    dnf -y install wget tar epel-release chkconfig gcc gcc-c++ make ncurses-devel \
-    libxml2-devel sqlite-devel git diffutils && \
-    dnf clean all
+FROM rockylinux:${BASE_VERSION} AS build
+
+ARG BASE_VERSION
+ARG ASTERISK_VERSION
+
+RUN if [[ "${BASE_VERSION}" == *minimal ]]; then \
+        echo "Minimal version detected, installing dnf..." && \
+        microdnf install -y dnf && microdnf clean all && \
+        ln -s /usr/bin/dnf /usr/bin/yum && \
+        dnf -y update && \
+        dnf -y install wget tar epel-release chkconfig libedit-devel gcc gcc-c++ make ncurses-devel \
+        libxml2-devel sqlite-devel git diffutils && \
+        dnf clean all; \
+    else \
+        echo "Standard version detected, installing dnf..." && \
+        dnf -y update && \
+        dnf -y install wget tar epel-release chkconfig libedit-devel gcc gcc-c++ make ncurses-devel \
+        libxml2-devel sqlite-devel git diffutils && \
+        dnf clean all; \
+    fi
 
 RUN if [ -f /etc/selinux/config ]; then \
         sed -i s/SELINUX=enforcing/SELINUX=disabled/g /etc/selinux/config && \
@@ -31,10 +43,20 @@ RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERIS
 
 FROM rockylinux:${BASE_VERSION}
 
-RUN microdnf install -y dnf && microdnf clean all && \
-    dnf -y update && \
-    dnf -y install epel-release libedit ncurses libxml2 sqlite gettext && \
-    dnf clean all
+ARG BASE_VERSION
+
+RUN if [[ "${BASE_VERSION}" == *minimal ]]; then \
+        echo "Minimal version detected, installing dnf..." && \
+        microdnf install -y dnf && microdnf clean all && \
+        dnf -y update && \
+        dnf -y install epel-release libedit ncurses libxml2 sqlite gettext && \
+        dnf clean all; \
+    else \
+        echo "Standard version detected, installing dnf..." && \
+        dnf -y update && \
+        dnf -y install epel-release libedit ncurses libxml2 sqlite gettext && \
+        dnf clean all; \
+    fi
 
 RUN groupadd -r asterisk && useradd -r -g asterisk asterisk
 
