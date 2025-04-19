@@ -10,4 +10,4 @@ run: build
 		--restart always \
 		$(MICROSERVICE_NAME)
 
-build-and-release: build release 
+build-and-release: build release

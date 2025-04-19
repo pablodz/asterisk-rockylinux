@@ -1,23 +1,22 @@
 # Stage 1: Build Asterisk
-FROM rockylinux:9-minimal AS build
+ARG BASE_VERSION=9-minimal
+FROM rockylinux:${BASE_VERSION} AS build
 
 ARG ASTERISK_VERSION=22
 
-# Install build dependencies
+# Install build dependencies and disable SELinux in a single step
 RUN microdnf install -y dnf && microdnf clean all && \
     ln -s /usr/bin/dnf /usr/bin/yum && \
     dnf -y update && \
     dnf -y install wget tar epel-release chkconfig libedit-devel gcc gcc-c++ make ncurses-devel \
     libxml2-devel sqlite-devel git diffutils && \
-    dnf clean all
-
-# Disable SELinux (only if the config file exists)
-RUN if [ -f /etc/selinux/config ]; then \
+    if [ -f /etc/selinux/config ]; then \
         sed -i s/SELINUX=enforcing/SELINUX=disabled/g /etc/selinux/config && \
         setenforce 0; \
-    fi
+    fi && \
+    dnf clean all
 
-# Download and compile Asterisk
+# Download, compile, and install Asterisk in a single step
 WORKDIR /usr/src
 RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}-current.tar.gz && \
     tar zxvf asterisk-${ASTERISK_VERSION}-current.tar.gz && \
@@ -33,9 +32,9 @@ RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERIS
     make basic-pbx
 
 # Stage 2: Create runtime image
-FROM rockylinux:9-minimal
+FROM rockylinux:${BASE_VERSION}
 
-# Install runtime dependencies
+# Install runtime dependencies in a single step
 RUN microdnf install -y dnf && microdnf clean all && \
     dnf -y update && \
     dnf -y install epel-release libedit ncurses libxml2 sqlite gettext && \
@@ -50,9 +49,8 @@ COPY --from=build /usr/sbin /usr/sbin
 COPY --from=build /var/lib/asterisk /var/lib/asterisk
 COPY --from=build /etc/asterisk /etc/asterisk
 
-# Set ownership and permissions
-RUN chown -R asterisk:asterisk /var/lib/asterisk && \
-    chmod -R 750 /var/lib/asterisk
+# Set ownership and permissions in a single step
+RUN chown -R asterisk:asterisk /var/lib/asterisk && chmod -R 750 /var/lib/asterisk
 
-# Set the entrypoint to start Asterisk with specified user, group, and verbosity
+# Set the entrypoint to start Asterisk
 ENTRYPOINT ["/usr/sbin/asterisk", "-U", "asterisk", "-G", "asterisk", "-pvvvdddf"]

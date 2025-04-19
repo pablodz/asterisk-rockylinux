@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         version: [20, 21, 22]
+        base_version: [9.3-minimal, 9-minimal, 8.9-minimal, 8-minimal]
 
     steps:
       - uses: actions/checkout@v3
@@ -28,7 +29,8 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.version }}
+            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.version }}-${{ matrix.base_version }}
           build-args: |
             ASTERISK_VERSION=${{ matrix.version }}
+            BASE_VERSION=${{ matrix.base_version }}
           platforms: linux/amd64,linux/arm64
