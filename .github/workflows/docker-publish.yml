@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [20, 21, 22]
+        version: [20, 21, 22, latest]
         base_version: [8, 8-minimal, 8.9-minimal, 9, 9-minimal, 9.3-minimal]
 
     steps:

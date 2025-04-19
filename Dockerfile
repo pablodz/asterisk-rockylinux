@@ -17,7 +17,7 @@ RUN if [[ "${BASE_VERSION}" == *minimal ]]; then \
     else \
         echo "Standard version detected, installing dnf..." && \
         dnf -y update && \
-        dnf -y install wget tar epel-release chkconfig libedit-devel gcc gcc-c++ make ncurses-devel \
+        dnf -y install wget tar epel-release chkconfig gcc gcc-c++ make ncurses-devel \
         libxml2-devel sqlite-devel git diffutils && \
         dnf clean all; \
     fi
@@ -28,10 +28,15 @@ RUN if [ -f /etc/selinux/config ]; then \
     fi
 
 WORKDIR /usr/src
-RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}-current.tar.gz && \
-    tar zxvf asterisk-${ASTERISK_VERSION}-current.tar.gz && \
-    rm -rf asterisk-${ASTERISK_VERSION}-current.tar.gz && \
-    cd asterisk-${ASTERISK_VERSION}* && \
+RUN if [ "${ASTERISK_VERSION}" = "latest" ]; then \
+        git clone --depth 1 https://github.com/asterisk/asterisk.git && \
+        cd asterisk && \
+    else \
+        wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}-current.tar.gz && \
+        tar zxvf asterisk-${ASTERISK_VERSION}-current.tar.gz && \
+        rm -rf asterisk-${ASTERISK_VERSION}-current.tar.gz && \
+        cd asterisk-${ASTERISK_VERSION}*; \
+    fi && \
     contrib/scripts/install_prereq install && \
     ./configure --libdir=/usr/lib64 --with-pjproject-bundled --with-jansson-bundled && \
     make menuselect.makeopts && \
