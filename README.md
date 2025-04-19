@@ -6,11 +6,27 @@ This repository provides Docker images for running Asterisk on Rocky Linux. The 
 
 ## Available Tags
 
-- `pablogod/asterisk-rockylinux:20-<base_version>`
-- `pablogod/asterisk-rockylinux:21-<base_version>`
-- `pablogod/asterisk-rockylinux:22-<base_version>`
-
-Replace `<base_version>` with one of the supported Rocky Linux base versions.
+| Tag                                      | Asterisk Version | Base Version       |
+|------------------------------------------|------------------|--------------------|
+| `pablogod/asterisk-rockylinux:20-8`      | 20               | 8                  |
+| `pablogod/asterisk-rockylinux:20-8-minimal` | 20               | 8-minimal          |
+| `pablogod/asterisk-rockylinux:20-8.9-minimal` | 20               | 8.9-minimal        |
+| `pablogod/asterisk-rockylinux:20-9`      | 20               | 9                  |
+| `pablogod/asterisk-rockylinux:20-9-minimal` | 20               | 9-minimal          |
+| `pablogod/asterisk-rockylinux:20-9.3-minimal` | 20               | 9.3-minimal        |
+| `pablogod/asterisk-rockylinux:21-8`      | 21               | 8                  |
+| `pablogod/asterisk-rockylinux:21-8-minimal` | 21               | 8-minimal          |
+| `pablogod/asterisk-rockylinux:21-8.9-minimal` | 21               | 8.9-minimal        |
+| `pablogod/asterisk-rockylinux:21-9`      | 21               | 9                  |
+| `pablogod/asterisk-rockylinux:21-9-minimal` | 21               | 9-minimal          |
+| `pablogod/asterisk-rockylinux:21-9.3-minimal` | 21               | 9.3-minimal        |
+| `pablogod/asterisk-rockylinux:22-8`      | 22               | 8                  |
+| `pablogod/asterisk-rockylinux:22-8-minimal` | 22               | 8-minimal          |
+| `pablogod/asterisk-rockylinux:22-8.9-minimal` | 22               | 8.9-minimal        |
+| `pablogod/asterisk-rockylinux:22-9`      | 22               | 9                  |
+| `pablogod/asterisk-rockylinux:22-9-minimal` | 22               | 9-minimal          |
+| `pablogod/asterisk-rockylinux:22-9.3-minimal` | 22               | 9.3-minimal        |
+| `pablogod/asterisk-rockylinux:latest`   | latest (not-stable)           | 9-minimal          |
 
 ## Supported Rocky Linux Base Versions
 
