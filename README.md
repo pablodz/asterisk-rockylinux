@@ -1,6 +1,6 @@
-# Asterisk on Rocky Linux
+# Asterisk on Docker with Rocky Linux
 
-![Build and Publish](https://github.com/pablogod/asterisk-rockylinux/actions/workflows/build-and-publish.yml/badge.svg)
+![Build and Publish](https://github.com/pablodz/asterisk-rockylinux/actions/workflows/docker-publish.yml/badge.svg)
 
 This repository provides Docker images for running Asterisk on Rocky Linux. The images are available on Docker Hub under the repository `pablogod/asterisk-rockylinux` with tags corresponding to the Asterisk version and base version.
 
