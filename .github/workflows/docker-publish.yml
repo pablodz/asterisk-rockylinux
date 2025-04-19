@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         asterisk_version: [20, 21, 22]
-        base_version: [8, 8-minimal, 8.9-minimal, 9, 9-minimal, 9.3-minimal]
+        base_version: [8-minimal, 9-minimal]
 
     steps:
       - uses: actions/checkout@v3
