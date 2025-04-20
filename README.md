@@ -46,6 +46,35 @@ Replace `/path/to/your/config` with the directory containing your Asterisk confi
 
 **Note:** The `--network host` mode is required to run Asterisk as a node because NAT (Network Address Translation) can cause issues with SIP and RTP protocols. Due to this limitation, it is not possible to run more than one replica of the container in a Kubernetes pod.
 
+### Run with Docker Compose
+
+You can also use Docker Compose to manage the container. Below is an example `docker-compose.yml` file:
+
+```yaml
+version: '3.8'
+services:
+  asterisk:
+    image: pablogod/asterisk-rockylinux:<version>-<base_version>
+    network_mode: host
+    restart: always
+    volumes:
+      - /path/to/your/config:/etc/asterisk
+```
+
+Replace `<version>-<base_version>` with the desired tag (e.g., `20-9-minimal`) and `/path/to/your/config` with the directory containing your Asterisk configuration files (`*.conf`).
+
+To start the container using Docker Compose, run:
+
+```bash
+docker-compose up -d
+```
+
+To stop the container, run:
+
+```bash
+docker-compose down
+```
+
 ### Automated Builds with GitHub Actions
 
 This repository includes a GitHub Actions workflow to automate the build and push process for Docker images. The workflow builds images for all combinations of Asterisk versions (`20`, `21`, `22`) and Rocky Linux base versions (`9.3-minimal`, `9-minimal`).
