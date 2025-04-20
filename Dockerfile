@@ -1,7 +1,7 @@
 ARG ASTERISK_VERSION=latest
 ARG BASE_VERSION=9-minimal
 
-FROM rockylinux:${BASE_VERSION} AS build
+FROM public.ecr.aws/docker/library/rockylinux:${BASE_VERSION} AS build
 
 ARG ASTERISK_VERSION
 ARG BASE_VERSION
@@ -42,7 +42,7 @@ RUN if [ "${ASTERISK_VERSION}" = "latest" ]; then \
     make samples && \
     make basic-pbx
 
-FROM rockylinux:${BASE_VERSION}
+FROM public.ecr.aws/docker/library/rockylinux:${BASE_VERSION}
 
 ARG BASE_VERSION
 
