@@ -4,6 +4,8 @@
 
 This repository provides Docker images for running Asterisk on Rocky Linux. The images are available on Docker Hub under the repository `pablogod/asterisk-rockylinux` with tags corresponding to the Asterisk version and base version.
 
+**Note:** Only the `latest` version supports DTMF over the audiosocket protocol with Asterisk.
+
 ## Available Tags
 
 | Tag                                      | Asterisk Version | Base Version       |
