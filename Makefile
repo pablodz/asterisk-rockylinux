@@ -1,4 +1,4 @@
-MICROSERVICE_NAME=pablogod/asterisk-rockylinux:latest
+MICROSERVICE_NAME=pablogod/asterisk-rockylinux:test
 
 build:
 	docker build -t $(MICROSERVICE_NAME) .
