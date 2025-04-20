@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        asterisk_version: [20, 21, 22]
-        base_version: [9-minimal, 9.3-minimal]
+        asterisk_version: [22, 21, 20]
+        base_version: [9, 9-minimal, 8, 8-minimal]
 
     steps:
       - uses: actions/checkout@v3

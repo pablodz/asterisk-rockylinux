@@ -12,13 +12,19 @@ This repository provides Docker images for running Asterisk on Rocky Linux. The 
 
 | Tag                                      | Asterisk Version | Base Version       |
 |------------------------------------------|------------------|--------------------|
-| `pablogod/asterisk-rockylinux:20-9-minimal` | 20               | 9-minimal          |
-| `pablogod/asterisk-rockylinux:20-9.3-minimal` | 20               | 9.3-minimal        |
-| `pablogod/asterisk-rockylinux:21-9-minimal` | 21               | 9-minimal          |
-| `pablogod/asterisk-rockylinux:21-9.3-minimal` | 21               | 9.3-minimal        |
-| `pablogod/asterisk-rockylinux:22-9-minimal` | 22               | 9-minimal          |
-| `pablogod/asterisk-rockylinux:22-9.3-minimal` | 22               | 9.3-minimal        |
 | `pablogod/asterisk-rockylinux:latest`   | latest (not-stable)           | 9-minimal          |
+| `pablogod/asterisk-rockylinux:22-9-minimal` | 22               | 9-minimal          |
+| `pablogod/asterisk-rockylinux:22-8-minimal` | 22               | 8-minimal          |
+| `pablogod/asterisk-rockylinux:22-9`        | 22               | 9                  |
+| `pablogod/asterisk-rockylinux:22-8`        | 22               | 8                  |
+| `pablogod/asterisk-rockylinux:21-9-minimal` | 21               | 9-minimal          |
+| `pablogod/asterisk-rockylinux:21-8-minimal` | 21               | 8-minimal          |
+| `pablogod/asterisk-rockylinux:21-9`        | 21               | 9                  |
+| `pablogod/asterisk-rockylinux:21-8`        | 21               | 8                  |
+| `pablogod/asterisk-rockylinux:20-9-minimal` | 20               | 9-minimal          |
+| `pablogod/asterisk-rockylinux:20-8-minimal` | 20               | 8-minimal          |
+| `pablogod/asterisk-rockylinux:20-9`        | 20               | 9                  |
+| `pablogod/asterisk-rockylinux:20-8`        | 20               | 8                  |
 
 ### Build the Image Locally
 
@@ -74,7 +80,3 @@ To stop the container, run:
 ```bash
 docker-compose down
 ```
-
-### Automated Builds with GitHub Actions
-
-This repository includes a GitHub Actions workflow to automate the build and push process for Docker images. The workflow builds images for all combinations of Asterisk versions (`20`, `21`, `22`) and Rocky Linux base versions (`9.3-minimal`, `9-minimal`).
