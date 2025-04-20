@@ -33,7 +33,6 @@ jobs:
           build-args: |
             ASTERISK_VERSION=${{ matrix.asterisk_version }}
             BASE_VERSION=${{ matrix.base_version }}
-          platforms: linux/amd64,linux/arm64
 
   build-and-push-latest:
     runs-on: ubuntu-latest
@@ -58,4 +57,3 @@ jobs:
           build-args: |
             ASTERISK_VERSION=latest
             BASE_VERSION=9-minimal
-          platforms: linux/amd64,linux/arm64
