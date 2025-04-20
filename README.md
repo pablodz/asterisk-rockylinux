@@ -15,16 +15,12 @@ This repository provides Docker images for running Asterisk on Rocky Linux. The 
 | `pablogod/asterisk-rockylinux:latest`   | latest (not-stable)           | 9-minimal          |
 | `pablogod/asterisk-rockylinux:22-9-minimal` | 22               | 9-minimal          |
 | `pablogod/asterisk-rockylinux:22-8-minimal` | 22               | 8-minimal          |
-| `pablogod/asterisk-rockylinux:22-9`        | 22               | 9                  |
-| `pablogod/asterisk-rockylinux:22-8`        | 22               | 8                  |
 | `pablogod/asterisk-rockylinux:21-9-minimal` | 21               | 9-minimal          |
 | `pablogod/asterisk-rockylinux:21-8-minimal` | 21               | 8-minimal          |
-| `pablogod/asterisk-rockylinux:21-9`        | 21               | 9                  |
-| `pablogod/asterisk-rockylinux:21-8`        | 21               | 8                  |
 | `pablogod/asterisk-rockylinux:20-9-minimal` | 20               | 9-minimal          |
 | `pablogod/asterisk-rockylinux:20-8-minimal` | 20               | 8-minimal          |
-| `pablogod/asterisk-rockylinux:20-9`        | 20               | 9                  |
-| `pablogod/asterisk-rockylinux:20-8`        | 20               | 8                  |
+
+[Docker Hub Tags](https://hub.docker.com/repository/docker/pablogod/asterisk-rockylinux/tags)
 
 ### Build the Image Locally
 
