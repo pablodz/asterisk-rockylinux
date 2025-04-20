@@ -1,14 +1,13 @@
 ARG ASTERISK_VERSION=20
 ARG BASE_VERSION=8-minimal
 
-FROM public.ecr.aws/docker/library/rockylinux:${BASE_VERSION} AS build
+# Static build
+FROM public.ecr.aws/docker/library/rockylinux:9 AS build
 
 ARG ASTERISK_VERSION
 ARG BASE_VERSION
 
-RUN microdnf install -y dnf && microdnf clean all && \
-    ln -s /usr/bin/dnf /usr/bin/yum && \
-    dnf -y update && \
+RUN dnf -y update && \
     dnf -y install wget tar epel-release gcc gcc-c++ make ncurses-devel libxml2-devel sqlite-devel git diffutils && \
     dnf clean all
 
@@ -42,6 +41,7 @@ RUN if [ "${ASTERISK_VERSION}" = "latest" ]; then \
     make samples && \
     make basic-pbx
 
+# Dynamic build
 FROM public.ecr.aws/docker/library/rockylinux:${BASE_VERSION}
 
 ARG BASE_VERSION
