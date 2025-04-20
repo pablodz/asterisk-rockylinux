@@ -37,10 +37,6 @@ jobs:
 
   build-and-push-latest:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        asterisk_version: [latest]
-        base_version: [9-minimal]
 
     steps:
       - uses: actions/checkout@v3
