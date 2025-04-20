@@ -9,7 +9,7 @@ ARG BASE_VERSION
 RUN microdnf install -y dnf && microdnf clean all && \
     ln -s /usr/bin/dnf /usr/bin/yum && \
     dnf -y update && \
-    dnf -y install wget tar epel-release gcc gcc-c++ make ncurses-devel libxml2-devel sqlite-devel git diffutils libedit-devel && \
+    dnf -y install wget tar epel-release gcc gcc-c++ make ncurses-devel libxml2-devel sqlite-devel git diffutils && \
     dnf clean all
 
 # Disable SELinux if the config file exists
