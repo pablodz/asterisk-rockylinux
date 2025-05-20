@@ -1,5 +1,5 @@
 ARG ASTERISK_VERSION=20
-ARG BASE_VERSION=8-minimal
+ARG BASE_VERSION=9-minimal
 
 # Static build
 FROM public.ecr.aws/docker/library/rockylinux:9 AS build
