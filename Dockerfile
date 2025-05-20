@@ -48,7 +48,8 @@ ARG BASE_VERSION
 
 RUN microdnf install -y dnf && microdnf clean all && \
     dnf -y update && \
-    dnf -y install epel-release libedit ncurses libxml2 sqlite gettext sox && \
+    dnf -y install epel-release libedit ncurses libxml2 sqlite gettext && \
+    dnf -y install sox && \
     dnf clean all
 
 # Create asterisk user and group
