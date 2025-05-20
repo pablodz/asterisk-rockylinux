@@ -33,7 +33,7 @@ RUN if [ "${ASTERISK_VERSION}" = "latest" ]; then \
         cd asterisk; \
     fi && \
     contrib/scripts/install_prereq install && \
-    ./configure --libdir=/usr/lib64 --with-pjproject-bundled --with-jansson-bundled && \
+    NOISY_BUILD=yes ./configure --libdir=/usr/lib64 --with-pjproject-bundled --with-jansson-bundled && \
     make menuselect.makeopts && \
     menuselect/menuselect --disable BUILD_NATIVE --disable-category MENUSELECT_ADDONS menuselect.makeopts && \
     make && \
