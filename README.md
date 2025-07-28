@@ -18,8 +18,6 @@ This repository provides Docker images for running Asterisk on Rocky Linux. The 
 | `22-9-minimal-chansip`                        | 22               | 9-minimal   | ✅ Yes              |
 | `21-9-minimal`                                | 21               | 9-minimal   | ❌ No               |
 | `21-9-minimal-chansip`                        | 21               | 9-minimal   | ✅ Yes              |
-| `20-9-minimal`                                | 20               | 9-minimal   | ❌ No               |
-| `20-9-minimal-chansip`                        | 20               | 9-minimal   | ✅ Yes              |
 
 👉 See all available tags on [Docker Hub](https://hub.docker.com/r/pablogod/asterisk-rockylinux/tags)
 
