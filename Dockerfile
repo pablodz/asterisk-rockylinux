@@ -46,16 +46,17 @@ WORKDIR /usr/src
 RUN set -ex && \
     if [ "${ASTERISK_VERSION}" = "latest" ]; then \
         echo "Cloning Asterisk from GitHub"; \
-        git clone --depth 1 --single-branch https://github.com/asterisk/asterisk.git asterisk && \
+        git clone --depth 1 --single-branch https://github.com/asterisk/asterisk.git asterisk; \
+        cd asterisk; \
     else \
         echo "Downloading Asterisk version ${ASTERISK_VERSION}"; \
         wget --no-cache --timeout=30 --tries=3 \
-            "http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}-current.tar.gz" && \
-        tar zxf "asterisk-${ASTERISK_VERSION}-current.tar.gz" && \
-        rm -f "asterisk-${ASTERISK_VERSION}-current.tar.gz" && \
-        mv asterisk-${ASTERISK_VERSION}* asterisk && \
-    fi \
-    cd asterisk && \
+            "http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}-current.tar.gz"; \
+        tar zxf "asterisk-${ASTERISK_VERSION}-current.tar.gz"; \
+        rm -f "asterisk-${ASTERISK_VERSION}-current.tar.gz"; \
+        mv asterisk-${ASTERISK_VERSION}* asterisk; \
+        cd asterisk; \
+    fi && \
     if [ "$ENABLE_CHAN_SIP" = "true" ]; then \
         # Reinclude chan_sip module from external repository
         echo "Reincluding chan_sip module..."; \
