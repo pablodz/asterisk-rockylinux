@@ -1,12 +1,14 @@
 # Define build arguments with defaults
-ARG ASTERISK_VERSION=20
+ARG ASTERISK_VERSION=22
 ARG BASE_VERSION=9-minimal
+ARG ENABLE_CHAN_SIP=true
 
 # Static build stage
 FROM public.ecr.aws/docker/library/rockylinux:9 AS build
 
 ARG ASTERISK_VERSION
 ARG BASE_VERSION
+ARG ENABLE_CHAN_SIP
 
 # Install build dependencies with version pinning for security
 RUN dnf -y update && \
@@ -28,8 +30,7 @@ RUN dnf -y update && \
         autoconf \
         automake \
         libtool \
-        pkgconfig \
-        && \
+        pkgconfig && \
     dnf clean all && \
     rm -rf /var/cache/dnf/*
 
@@ -46,7 +47,6 @@ RUN set -ex && \
     if [ "${ASTERISK_VERSION}" = "latest" ]; then \
         echo "Cloning Asterisk from GitHub"; \
         git clone --depth 1 --single-branch https://github.com/asterisk/asterisk.git asterisk && \
-        cd asterisk; \
     else \
         echo "Downloading Asterisk version ${ASTERISK_VERSION}"; \
         wget --no-cache --timeout=30 --tries=3 \
@@ -54,7 +54,17 @@ RUN set -ex && \
         tar zxf "asterisk-${ASTERISK_VERSION}-current.tar.gz" && \
         rm -f "asterisk-${ASTERISK_VERSION}-current.tar.gz" && \
         mv asterisk-${ASTERISK_VERSION}* asterisk && \
-        cd asterisk; \
+    fi && \
+    cd asterisk && \
+    if [ "$ENABLE_CHAN_SIP" = "true" ]; then \
+        # Reinclude chan_sip module from external repository
+        echo "Reincluding chan_sip module..."; \
+        wget https://raw.githubusercontent.com/InterLinked1/chan_sip/master/chan_sip_reinclude.sh && \
+        chmod +x chan_sip_reinclude.sh && \
+        ./chan_sip_reinclude.sh && \
+        echo "chan_sip module reincluded successfully"; \
+    else \
+        echo "Skipping chan_sip reinclude"; \
     fi && \
     # Install prerequisites with better error handling \
     contrib/scripts/install_prereq install && \
@@ -71,8 +81,10 @@ RUN set -ex && \
     menuselect/menuselect \
         --disable BUILD_NATIVE \
         --disable-category MENUSELECT_ADDONS \
+        $( [ "$ENABLE_CHAN_SIP" = "true" ] && echo "--enable chan_sip" ) \
         menuselect.makeopts && \
     # Build with parallel jobs for faster compilation \
+    make channels && \
     make -j$(nproc) && \
     make install && \
     make samples && \

@@ -10,6 +10,7 @@ jobs:
       matrix:
         asterisk_version: [22, 21, 20]
         base_version: [9-minimal]
+        enable_chan_sip: [false, true]
 
     steps:
       - uses: actions/checkout@v4
@@ -27,13 +28,17 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.asterisk_version }}-${{ matrix.base_version }}
+            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.asterisk_version }}-${{ matrix.base_version }}${{ matrix.enable_chan_sip == 'true' && '-chansip' || '' }}
           build-args: |
             ASTERISK_VERSION=${{ matrix.asterisk_version }}
             BASE_VERSION=${{ matrix.base_version }}
+            ENABLE_CHAN_SIP=${{ matrix.enable_chan_sip }}
 
   build-and-push-latest:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        enable_chan_sip: [false, true]
 
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +56,8 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:latest
+            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:latest${{ matrix.enable_chan_sip == 'true' && '-chansip' || '' }}
           build-args: |
             ASTERISK_VERSION=latest
             BASE_VERSION=9-minimal
+            ENABLE_CHAN_SIP=${{ matrix.enable_chan_sip }}
