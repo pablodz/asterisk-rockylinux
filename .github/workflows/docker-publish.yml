@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        asterisk_version: [22, 21, 20]
+        asterisk_version: [22, 21]
         base_version: [9-minimal]
         enable_chan_sip: [false, true]
 
