@@ -54,7 +54,7 @@ RUN set -ex && \
         tar zxf "asterisk-${ASTERISK_VERSION}-current.tar.gz" && \
         rm -f "asterisk-${ASTERISK_VERSION}-current.tar.gz" && \
         mv asterisk-${ASTERISK_VERSION}* asterisk && \
-    fi && \
+    fi \
     cd asterisk && \
     if [ "$ENABLE_CHAN_SIP" = "true" ]; then \
         # Reinclude chan_sip module from external repository
