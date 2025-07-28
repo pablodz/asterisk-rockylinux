@@ -28,7 +28,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.asterisk_version }}-${{ matrix.base_version }}${{ matrix.enable_chan_sip == 'true' && '-chansip' || '' }}
+            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.asterisk_version }}-${{ matrix.base_version }}${{ matrix.enable_chan_sip == true && '-chansip' || '' }}
           build-args: |
             ASTERISK_VERSION=${{ matrix.asterisk_version }}
             BASE_VERSION=${{ matrix.base_version }}
@@ -56,7 +56,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:latest${{ matrix.enable_chan_sip == 'true' && '-chansip' || '' }}
+            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:latest${{ matrix.enable_chan_sip == true && '-chansip' || '' }}
           build-args: |
             ASTERISK_VERSION=latest
             BASE_VERSION=9-minimal
