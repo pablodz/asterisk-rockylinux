@@ -32,7 +32,7 @@ jobs:
           build-args: |
             ASTERISK_VERSION=${{ matrix.asterisk_version }}
             BASE_VERSION=${{ matrix.base_version }}
-            ENABLE_CHAN_SIP=${{ matrix.enable_chan_sip }}
+            ENABLE_CHAN_SIP=${{ matrix.enable_chan_sip == true && 'true' || 'false' }}
 
   build-and-push-latest:
     runs-on: ubuntu-latest
@@ -60,4 +60,4 @@ jobs:
           build-args: |
             ASTERISK_VERSION=latest
             BASE_VERSION=9-minimal
-            ENABLE_CHAN_SIP=${{ matrix.enable_chan_sip }}
+            ENABLE_CHAN_SIP=${{ matrix.enable_chan_sip == true && 'true' || 'false' }}
