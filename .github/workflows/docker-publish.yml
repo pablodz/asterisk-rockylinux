@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        asterisk_version: [22, 21]
+        asterisk_version: [master, 23, 22, 21]
         base_version: [9-minimal]
         enable_chan_sip: [false, true]
 
@@ -23,41 +23,32 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
 
-      - name: Build and push
+      - name: Build image to get commit hash
         uses: docker/build-push-action@v6
         with:
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.asterisk_version }}-${{ matrix.base_version }}${{ matrix.enable_chan_sip == true && '-chansip' || '' }}
+          push: false
+          load: true
+          tags: temp-image
           build-args: |
             ASTERISK_VERSION=${{ matrix.asterisk_version }}
             BASE_VERSION=${{ matrix.base_version }}
             ENABLE_CHAN_SIP=${{ matrix.enable_chan_sip == true && 'true' || 'false' }}
 
-  build-and-push-latest:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        enable_chan_sip: [false, true]
+      - name: Extract Asterisk commit hash
+        id: commit
+        run: |
+          COMMIT_HASH=$(docker run --rm temp-image cat /tmp/asterisk-commit.txt | tr -d '\n')
+          echo "hash=${COMMIT_HASH}" >> $GITHUB_OUTPUT
+          echo "Asterisk commit hash: ${COMMIT_HASH}"
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-
-      - name: Build and push latest
+      - name: Build and push with commit tag
         uses: docker/build-push-action@v6
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:latest${{ matrix.enable_chan_sip == true && '-chansip' || '' }}
+            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.asterisk_version }}-${{ matrix.base_version }}${{ matrix.enable_chan_sip == true && '-chansip' || '' }}-${{ steps.commit.outputs.hash }}
+            ${{ secrets.DOCKER_USERNAME }}/asterisk-rockylinux:${{ matrix.asterisk_version }}-${{ matrix.base_version }}${{ matrix.enable_chan_sip == true && '-chansip' || '' }}
           build-args: |
-            ASTERISK_VERSION=latest
-            BASE_VERSION=9-minimal
+            ASTERISK_VERSION=${{ matrix.asterisk_version }}
+            BASE_VERSION=${{ matrix.base_version }}
             ENABLE_CHAN_SIP=${{ matrix.enable_chan_sip == true && 'true' || 'false' }}

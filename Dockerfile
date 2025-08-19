@@ -1,5 +1,5 @@
 # Define build arguments with defaults
-ARG ASTERISK_VERSION=22
+ARG ASTERISK_VERSION=23
 ARG BASE_VERSION=9-minimal
 ARG ENABLE_CHAN_SIP=true
 
@@ -14,7 +14,6 @@ ARG ENABLE_CHAN_SIP
 RUN dnf -y update && \
     dnf -y install \
         wget \
-        tar \
         epel-release \
         gcc \
         gcc-c++ \
@@ -42,21 +41,12 @@ RUN if [ -f /etc/selinux/config ]; then \
 
 WORKDIR /usr/src
 
-# Clone or download Asterisk based on the version with improved error handling
+# Clone Asterisk from GitHub tree based on the version
 RUN set -ex && \
-    if [ "${ASTERISK_VERSION}" = "latest" ]; then \
-        echo "Cloning Asterisk from GitHub"; \
-        git clone --depth 1 --single-branch https://github.com/asterisk/asterisk.git asterisk; \
-        cd asterisk; \
-    else \
-        echo "Downloading Asterisk version ${ASTERISK_VERSION}"; \
-        wget --no-cache --timeout=30 --tries=3 \
-            "http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}-current.tar.gz"; \
-        tar zxf "asterisk-${ASTERISK_VERSION}-current.tar.gz"; \
-        rm -f "asterisk-${ASTERISK_VERSION}-current.tar.gz"; \
-        mv asterisk-${ASTERISK_VERSION}* asterisk; \
-        cd asterisk; \
-    fi && \
+    echo "Cloning Asterisk from GitHub tree (version ${ASTERISK_VERSION})"; \
+    git clone --depth 1 --single-branch --branch ${ASTERISK_VERSION} https://github.com/asterisk/asterisk.git asterisk && \
+    cd asterisk && \
+    echo "$(git rev-parse HEAD)" > /tmp/asterisk-commit.txt && \
     if [ "$ENABLE_CHAN_SIP" = "true" ]; then \
         # Reinclude chan_sip module from external repository
         echo "Reincluding chan_sip module..."; \

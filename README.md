@@ -4,7 +4,7 @@
 
 This repository provides Docker images for running Asterisk on Rocky Linux. The images are available on Docker Hub under the repository [`pablogod/asterisk-rockylinux`](https://hub.docker.com/r/pablogod/asterisk-rockylinux) with tags corresponding to the Asterisk version, base version, and optionally `-chansip` if SIP support via `chan_sip` is enabled.
 
-> **Note:** Only the `latest` version supports DTMF over the AudioSocket protocol with Asterisk.
+> **Note:** Only the `master version supports DTMF over the AudioSocket protocol with Asterisk.
 
 ---
 
@@ -12,8 +12,10 @@ This repository provides Docker images for running Asterisk on Rocky Linux. The 
 
 | Tag                                           | Asterisk Version | Base Version | `chan_sip` Enabled |
 |-----------------------------------------------|------------------|--------------|---------------------|
-| `latest`                                      | latest (unstable) | 9-minimal   | ❌ No               |
-| `latest-chansip`                              | latest (unstable) | 9-minimal   | ✅ Yes              |
+| `master`                                      | master (unstable) | 9-minimal   | ❌ No               |
+| `master-chansip`                              | master (unstable) | 9-minimal   | ✅ Yes              |
+| `23-9-minimal`                                | 23               | 9-minimal   | ❌ No               |
+| `23-9-minimal-chansip`                        | 23               | 9-minimal   | ✅ Yes              |
 | `22-9-minimal`                                | 22               | 9-minimal   | ❌ No               |
 | `22-9-minimal-chansip`                        | 22               | 9-minimal   | ✅ Yes              |
 | `21-9-minimal`                                | 21               | 9-minimal   | ❌ No               |
@@ -119,7 +121,7 @@ docker-compose down
 
 | ARG Name         | Default     | Description                                  |
 |------------------|-------------|----------------------------------------------|
-| `ASTERISK_VERSION` | `22`        | Asterisk version to build (or `latest`)      |
+| `ASTERISK_VERSION` | `22`        | Asterisk version to build (or `master`)      |
 | `BASE_VERSION`     | `9-minimal` | Rocky Linux base version                     |
 | `ENABLE_CHAN_SIP`  | `false`     | Set to `true` to include `chan_sip` module   |
 
