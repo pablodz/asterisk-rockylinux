@@ -23,7 +23,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
 
-      - name: Build image to get commit hash
+      - name: Build image to generate commit hash
         uses: docker/build-push-action@v6
         with:
           push: false
@@ -37,9 +37,14 @@ jobs:
       - name: Extract Asterisk commit hash
         id: commit
         run: |
-          COMMIT_HASH=$(docker run --rm temp-image cat /tmp/asterisk-commit.txt | tr -d '\n')
-          echo "hash=${COMMIT_HASH}" >> $GITHUB_OUTPUT
-          echo "Asterisk commit hash: ${COMMIT_HASH}"
+          if [ -f /tmp/asterisk-commit.txt ]; then
+            COMMIT_HASH=$(cat /tmp/asterisk-commit.txt | tr -d '\n')
+            echo "hash=${COMMIT_HASH}" >> $GITHUB_OUTPUT
+            echo "Asterisk commit hash: ${COMMIT_HASH}"
+          else
+            echo "File /tmp/asterisk-commit.txt not found"
+            exit 1
+          fi
 
       - name: Build and push with commit tag
         uses: docker/build-push-action@v6

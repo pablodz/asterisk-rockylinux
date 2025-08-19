@@ -103,6 +103,7 @@ COPY --from=build /usr/lib64 /usr/lib64
 COPY --from=build /usr/sbin /usr/sbin
 COPY --from=build /var/lib/asterisk /var/lib/asterisk
 COPY --from=build /etc/asterisk /etc/asterisk
+COPY --from=build /tmp/asterisk-commit.txt /tmp/asterisk-commit.txt
 
 # Set permissions for Asterisk
 RUN chown -R asterisk:asterisk /var/lib/asterisk && chmod -R 750 /var/lib/asterisk
