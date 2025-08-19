@@ -46,7 +46,6 @@ RUN set -ex && \
     echo "Cloning Asterisk from GitHub tree (version ${ASTERISK_VERSION})"; \
     git clone --depth 1 --single-branch --branch ${ASTERISK_VERSION} https://github.com/asterisk/asterisk.git asterisk && \
     cd asterisk && \
-    echo "$(git rev-parse HEAD)" > /tmp/asterisk-commit.txt && \
     if [ "$ENABLE_CHAN_SIP" = "true" ]; then \
         # Reinclude chan_sip module from external repository
         echo "Reincluding chan_sip module..."; \
@@ -103,7 +102,6 @@ COPY --from=build /usr/lib64 /usr/lib64
 COPY --from=build /usr/sbin /usr/sbin
 COPY --from=build /var/lib/asterisk /var/lib/asterisk
 COPY --from=build /etc/asterisk /etc/asterisk
-COPY --from=build /tmp/asterisk-commit.txt /tmp/asterisk-commit.txt
 
 # Set permissions for Asterisk
 RUN chown -R asterisk:asterisk /var/lib/asterisk && chmod -R 750 /var/lib/asterisk
