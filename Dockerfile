@@ -89,10 +89,9 @@ FROM rockylinux:${BASE_VERSION}
 ARG BASE_VERSION
 
 RUN microdnf install -y dnf && microdnf clean all && \
+    dnf clean all && rm -r /var/cache/dnf  && dnf upgrade -y && dnf update -y && \
     dnf -y install epel-release && \
-    dnf -y update && \
-    dnf -y install libedit ncurses libxml2 sqlite gettext && \
-    dnf -y install sox && \
+    dnf -y install libedit ncurses libxml2 sqlite gettext sox&& \
     dnf clean all
 
 # Create asterisk user and group
