@@ -89,10 +89,9 @@ FROM public.ecr.aws/docker/library/rockylinux:${BASE_VERSION}
 ARG BASE_VERSION
 
 RUN microdnf install -y dnf && microdnf clean all && \
-    dnf -y --refresh update && \
-    dnf -y --refresh install epel-release && \
-    dnf -y --refresh install libedit ncurses libxml2 sqlite gettext && \
-    dnf -y --refresh install sox && \
+    dnf -y update && \
+    dnf -y install epel-release libedit ncurses libxml2 sqlite gettext && \
+    dnf -y install sox && \
     dnf clean all
 
 # Create asterisk user and group
