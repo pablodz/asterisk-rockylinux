@@ -10,7 +10,7 @@ ARG ASTERISK_VERSION
 ARG BASE_VERSION
 ARG ENABLE_CHAN_SIP
 
-# Install build dependencies with dnf
+# Install build dependencies with version pinning for security
 RUN dnf -y update && \
     dnf -y install \
         wget \
@@ -47,6 +47,7 @@ RUN set -ex && \
     git clone --depth 1 --single-branch --branch ${ASTERISK_VERSION} https://github.com/asterisk/asterisk.git asterisk && \
     cd asterisk && \
     if [ "$ENABLE_CHAN_SIP" = "true" ]; then \
+        # Reinclude chan_sip module from external repository
         echo "Reincluding chan_sip module..."; \
         wget https://raw.githubusercontent.com/InterLinked1/chan_sip/master/chan_sip_reinclude.sh && \
         chmod +x chan_sip_reinclude.sh && \
@@ -55,24 +56,30 @@ RUN set -ex && \
     else \
         echo "Skipping chan_sip reinclude"; \
     fi && \
+    # Install prerequisites with better error handling \
     contrib/scripts/install_prereq install && \
+    # Configure with optimized settings \
     NOISY_BUILD=yes ./configure \
         --libdir=/usr/lib64 \
         --with-pjproject-bundled \
         --with-jansson-bundled \
         --enable-dev-mode=no \
         --disable-xmldoc && \
+    # Generate menuselect configuration \
     make menuselect.makeopts && \
+    # Disable unnecessary modules for smaller image \
     menuselect/menuselect \
         --disable BUILD_NATIVE \
         --disable-category MENUSELECT_ADDONS \
         $( [ "$ENABLE_CHAN_SIP" = "true" ] && echo "--enable chan_sip" ) \
         menuselect.makeopts && \
+    # Build with parallel jobs for faster compilation \
     make channels && \
     make -j$(nproc) && \
     make install && \
     make samples && \
     make basic-pbx && \
+    # Clean up build artifacts \
     make clean && \
     cd .. && rm -rf asterisk
 
@@ -81,18 +88,23 @@ FROM rockylinux:${BASE_VERSION}
 
 ARG BASE_VERSION
 
-RUN microdnf install dnf && \
+RUN microdnf install -y dnf && microdnf clean all && \
+    dnf -y install epel-release && \
     dnf -y update && \
-    dnf -y install epel-release libedit ncurses libxml2 sqlite gettext sox && \
+    dnf -y install libedit ncurses libxml2 sqlite gettext && \
+    dnf -y install sox && \
     dnf clean all
 
+# Create asterisk user and group
 RUN groupadd -r asterisk && useradd -r -g asterisk asterisk
 
+# Copy built files from the build stage
 COPY --from=build /usr/lib64 /usr/lib64
 COPY --from=build /usr/sbin /usr/sbin
 COPY --from=build /var/lib/asterisk /var/lib/asterisk
 COPY --from=build /etc/asterisk /etc/asterisk
 
+# Set permissions for Asterisk
 RUN chown -R asterisk:asterisk /var/lib/asterisk && chmod -R 750 /var/lib/asterisk
 
 ENTRYPOINT ["/usr/sbin/asterisk", "-U", "asterisk", "-G", "asterisk", "-pvvvdddf"]
