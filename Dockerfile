@@ -4,7 +4,7 @@ ARG BASE_VERSION=9-minimal
 ARG ENABLE_CHAN_SIP=true
 
 # Static build stage
-FROM public.ecr.aws/docker/library/rockylinux:9 AS build
+FROM rockylinux:9 AS build
 
 ARG ASTERISK_VERSION
 ARG BASE_VERSION
@@ -84,7 +84,7 @@ RUN set -ex && \
     cd .. && rm -rf asterisk
 
 # Runtime stage - minimal image with only necessary components
-FROM public.ecr.aws/docker/library/rockylinux:${BASE_VERSION}
+FROM rockylinux:${BASE_VERSION}
 
 ARG BASE_VERSION
 
