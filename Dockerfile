@@ -81,7 +81,8 @@ FROM rockylinux:${BASE_VERSION}
 
 ARG BASE_VERSION
 
-RUN dnf -y update && \
+RUN microdnf install dnf && \
+    dnf -y update && \
     dnf -y install epel-release libedit ncurses libxml2 sqlite gettext sox && \
     dnf clean all
 
