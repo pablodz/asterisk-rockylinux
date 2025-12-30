@@ -122,16 +122,16 @@ RUN echo "* soft    nofile  1048576" > /etc/security/limits.conf && \
     echo "asterisk    soft    nproc   unlimited" >> /etc/security/limits.conf && \
     echo "asterisk    hard    nproc   unlimited" >> /etc/security/limits.conf
 
-# 2. Configurar Asterisk internamente (asterisk.conf)
-# Asterisk tiene su propia opción 'maxfiles'. Si no se establece, a veces usa 1024 por defecto
-# independientemente de lo que diga el sistema.
-RUN if grep -q "maxfiles" /etc/asterisk/asterisk.conf; then \
-    sed -i 's/^;maxfiles.*/maxfiles = 1048576/' /etc/asterisk/asterisk.conf && \
-    sed -i 's/^maxfiles.*/maxfiles = 1048576/' /etc/asterisk/asterisk.conf; \
-    else \
-    # Si no existe la línea, la insertamos en la sección [options]
-    sed -i '/\[options\]/a maxfiles = 1048576' /etc/asterisk/asterisk.conf; \
-    fi
+## 2. Configurar Asterisk internamente (asterisk.conf)
+## Asterisk tiene su propia opción 'maxfiles'. Si no se establece, a veces usa 1024 por defecto
+## independientemente de lo que diga el sistema.
+#RUN if grep -q "maxfiles" /etc/asterisk/asterisk.conf; then \
+#    sed -i 's/^;maxfiles.*/maxfiles = 1048576/' /etc/asterisk/asterisk.conf && \
+#    sed -i 's/^maxfiles.*/maxfiles = 1048576/' /etc/asterisk/asterisk.conf; \
+#    else \
+#    # Si no existe la línea, la insertamos en la sección [options]
+#    sed -i '/\[options\]/a maxfiles = 1048576' /etc/asterisk/asterisk.conf; \
+#    fi
 
 # ---------------------------------------------------------------------
 
