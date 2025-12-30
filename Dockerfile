@@ -106,4 +106,33 @@ COPY --from=build /etc/asterisk /etc/asterisk
 # Set permissions for Asterisk
 RUN chown -R asterisk:asterisk /var/lib/asterisk && chmod -R 750 /var/lib/asterisk
 
+# ---------------------------------------------------------------------
+# ### PRODUCTIVE LIMITS & TUNING ###
+# ---------------------------------------------------------------------
+
+# 1. Configurar límites a nivel de SO (PAM/System)
+# Esto asegura que si entras al contenedor o si Asterisk lanza subprocesos (AGI),
+# estos hereden los límites altos.
+RUN echo "* soft    nofile  1048576" > /etc/security/limits.conf && \
+    echo "* hard    nofile  1048576" >> /etc/security/limits.conf && \
+    echo "root        soft    nofile  1048576" >> /etc/security/limits.conf && \
+    echo "root        hard    nofile  1048576" >> /etc/security/limits.conf && \
+    echo "asterisk    soft    nofile  1048576" >> /etc/security/limits.conf && \
+    echo "asterisk    hard    nofile  1048576" >> /etc/security/limits.conf && \
+    echo "asterisk    soft    nproc   unlimited" >> /etc/security/limits.conf && \
+    echo "asterisk    hard    nproc   unlimited" >> /etc/security/limits.conf
+
+# 2. Configurar Asterisk internamente (asterisk.conf)
+# Asterisk tiene su propia opción 'maxfiles'. Si no se establece, a veces usa 1024 por defecto
+# independientemente de lo que diga el sistema.
+RUN if grep -q "maxfiles" /etc/asterisk/asterisk.conf; then \
+    sed -i 's/^;maxfiles.*/maxfiles = 1048576/' /etc/asterisk/asterisk.conf && \
+    sed -i 's/^maxfiles.*/maxfiles = 1048576/' /etc/asterisk/asterisk.conf; \
+    else \
+    # Si no existe la línea, la insertamos en la sección [options]
+    sed -i '/\[options\]/a maxfiles = 1048576' /etc/asterisk/asterisk.conf; \
+    fi
+
+# ---------------------------------------------------------------------
+
 ENTRYPOINT ["/usr/sbin/asterisk", "-U", "asterisk", "-G", "asterisk", "-pvvvdddf"]
