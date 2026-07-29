@@ -10,9 +10,7 @@ ARG ASTERISK_VERSION
 ARG BASE_VERSION
 ARG ENABLE_CHAN_SIP
 
-# Make dnf resilient to transient mirror failures. Written to dnf.conf so that
-# EVERY dnf/yum call in this stage inherits it -- including the ones inside
-# Asterisk's contrib/scripts/install_prereq, which we don't invoke directly.
+# dnf retries (inherited by install_prereq too)
 RUN printf '%s\n' \
         'retries=10' \
         'timeout=30' \
@@ -20,9 +18,7 @@ RUN printf '%s\n' \
         'max_parallel_downloads=10' \
         'fastestmirror=1' >> /etc/dnf/dnf.conf
 
-# Install build dependencies. Wrapped in a retry loop so a whole-command blip
-# (DNS/mirror sync mid-minor-release, e.g. 9.7->9.8) retries instead of failing
-# the layer -- this is exactly what took down the pipeline on 2026-07-28.
+# Install build dependencies
 RUN set -x; \
     for i in 1 2 3 4 5; do \
         dnf -y update && \
@@ -107,8 +103,6 @@ FROM rockylinux:${BASE_VERSION}
 
 ARG BASE_VERSION
 
-# Same retry treatment for the runtime stage. microdnf doesn't honor dnf.conf
-# retries, so the whole install chain runs inside a retry loop.
 RUN set -x; \
     for i in 1 2 3 4 5; do \
         microdnf install -y dnf && microdnf clean all && \
