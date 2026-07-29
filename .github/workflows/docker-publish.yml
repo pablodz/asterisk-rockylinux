@@ -8,13 +8,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     strategy:
-      # A blip on one matrix job must NOT cancel the other 7 (that made a single
-      # transient mirror failure look like a full CI outage).
       fail-fast: false
-      # Kept serial on purpose: compiling Asterisk with -j$(nproc) in several jobs
-      # at once OOMs the shared runner. With the buildx cache below, cache-hit runs
-      # are fast, so serial is cheap now. Bump to 2 only if you move to a bigger runner.
-      max-parallel: 1
       matrix:
         asterisk_version: [ master, 23, 22, 21 ]
         base_version: [ 9-minimal ]
@@ -28,8 +22,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # QEMU removed: we only build linux/amd64 (the runner's native arch), so the
-      # emulation layer was dead weight. Re-add it if you ever build linux/arm64.
       - uses: docker/setup-buildx-action@v4
 
       - name: Get Asterisk commit hash
@@ -45,9 +37,6 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           push: true
-          # Reuse layers (incl. the long Asterisk compile) across runs. A re-run
-          # after a transient failure resumes from cache instead of rebuilding.
-          # Scope per matrix combo so the 8 jobs don't clobber each other's cache.
           cache-from: type=gha,scope=${{ matrix.asterisk_version }}-${{ matrix.base_version }}-${{ matrix.enable_chan_sip }}
           cache-to: type=gha,mode=max,scope=${{ matrix.asterisk_version }}-${{ matrix.base_version }}-${{ matrix.enable_chan_sip }}
           tags: |
