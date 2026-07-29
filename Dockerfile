@@ -10,28 +10,44 @@ ARG ASTERISK_VERSION
 ARG BASE_VERSION
 ARG ENABLE_CHAN_SIP
 
-# Install build dependencies with version pinning for security
-RUN dnf -y update && \
-    dnf -y install \
-        wget \
-        epel-release \
-        gcc \
-        gcc-c++ \
-        make \
-        ncurses-devel \
-        libxml2-devel \
-        sqlite-devel \
-        git \
-        diffutils \
-        libedit-devel \
-        openssl-devel \
-        libuuid-devel \
-        autoconf \
-        automake \
-        libtool \
-        pkgconfig && \
-    dnf clean all && \
-    rm -rf /var/cache/dnf/*
+# Make dnf resilient to transient mirror failures. Written to dnf.conf so that
+# EVERY dnf/yum call in this stage inherits it -- including the ones inside
+# Asterisk's contrib/scripts/install_prereq, which we don't invoke directly.
+RUN printf '%s\n' \
+        'retries=10' \
+        'timeout=30' \
+        'minrate=100' \
+        'max_parallel_downloads=10' \
+        'fastestmirror=1' >> /etc/dnf/dnf.conf
+
+# Install build dependencies. Wrapped in a retry loop so a whole-command blip
+# (DNS/mirror sync mid-minor-release, e.g. 9.7->9.8) retries instead of failing
+# the layer -- this is exactly what took down the pipeline on 2026-07-28.
+RUN set -x; \
+    for i in 1 2 3 4 5; do \
+        dnf -y update && \
+        dnf -y install \
+            wget \
+            epel-release \
+            gcc \
+            gcc-c++ \
+            make \
+            ncurses-devel \
+            libxml2-devel \
+            sqlite-devel \
+            git \
+            diffutils \
+            libedit-devel \
+            openssl-devel \
+            libuuid-devel \
+            autoconf \
+            automake \
+            libtool \
+            pkgconfig && \
+        dnf clean all && rm -rf /var/cache/dnf/* && exit 0; \
+        echo "dnf attempt $i failed; retrying in 15s..."; sleep 15; \
+    done; \
+    echo "dnf failed after 5 attempts" >&2; exit 1
 
 # Disable SELinux if the config file exists (build context only)
 RUN if [ -f /etc/selinux/config ]; then \
@@ -44,12 +60,15 @@ WORKDIR /usr/src
 # Clone Asterisk from GitHub tree based on the version
 RUN set -ex && \
     echo "Cloning Asterisk from GitHub tree (version ${ASTERISK_VERSION})"; \
-    git clone --depth 1 --single-branch --branch ${ASTERISK_VERSION} https://github.com/asterisk/asterisk.git asterisk && \
+    ( for i in 1 2 3 4 5; do \
+        git clone --depth 1 --single-branch --branch ${ASTERISK_VERSION} https://github.com/asterisk/asterisk.git asterisk && exit 0; \
+        rm -rf asterisk; echo "git clone attempt $i failed; retrying in 15s..."; sleep 15; \
+      done; exit 1 ) && \
     cd asterisk && \
     if [ "$ENABLE_CHAN_SIP" = "true" ]; then \
         # Reinclude chan_sip module from external repository
         echo "Reincluding chan_sip module..."; \
-        wget https://raw.githubusercontent.com/InterLinked1/chan_sip/master/chan_sip_reinclude.sh && \
+        wget --tries=5 --timeout=30 --waitretry=15 https://raw.githubusercontent.com/InterLinked1/chan_sip/master/chan_sip_reinclude.sh && \
         chmod +x chan_sip_reinclude.sh && \
         ./chan_sip_reinclude.sh && \
         echo "chan_sip module reincluded successfully"; \
@@ -88,11 +107,20 @@ FROM rockylinux:${BASE_VERSION}
 
 ARG BASE_VERSION
 
-RUN microdnf install -y dnf && microdnf clean all && \
-    dnf clean all && rm -r /var/cache/dnf  && dnf upgrade -y && dnf update -y && \
-    dnf -y install epel-release && \
-    dnf -y install libedit ncurses libxml2 sqlite gettext sox && \
-    dnf clean all
+# Same retry treatment for the runtime stage. microdnf doesn't honor dnf.conf
+# retries, so the whole install chain runs inside a retry loop.
+RUN set -x; \
+    for i in 1 2 3 4 5; do \
+        microdnf install -y dnf && microdnf clean all && \
+        dnf clean all && rm -rf /var/cache/dnf && \
+        printf '%s\n' 'retries=10' 'timeout=30' 'minrate=100' 'fastestmirror=1' >> /etc/dnf/dnf.conf && \
+        dnf upgrade -y && dnf update -y && \
+        dnf -y install epel-release && \
+        dnf -y install libedit ncurses libxml2 sqlite gettext sox && \
+        dnf clean all && exit 0; \
+        echo "runtime dnf attempt $i failed; retrying in 15s..."; sleep 15; \
+    done; \
+    echo "runtime dnf failed after 5 attempts" >&2; exit 1
 
 # Create asterisk user and group
 RUN groupadd -r asterisk && useradd -r -g asterisk asterisk
